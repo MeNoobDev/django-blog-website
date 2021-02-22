@@ -1,0 +1,89 @@
+{% extends 'blog/base.html' %} {% block content %}
+
+<h1 class="posttitle loader">{{post.title}}</h1>
+{% if post.published_date %}
+<div class="date postdate">{{post.published_date}}</div>
+{% else %}
+<a href="{% url 'post_publish' pk=post.pk %}" class="btn btn-default"
+    >Publish</a
+>
+{% endif %}
+<p class="postcontent">{{post.text|safe|linebreaksbr}}</p>
+
+{% if user.is_authenticated %}
+<a href="{% url 'post_edit' pk=post.pk %}" class="btn btn-primary">
+    <span class="glyphicon glyphicon-pencil"
+        ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+        >
+            <path
+                d="M19.769 9.923l-12.642 12.639-7.127 1.438 1.438-7.128 12.641-12.64 5.69 5.691zm1.414-1.414l2.817-2.82-5.691-5.689-2.816 2.817 5.69 5.692z"
+            /></svg
+    ></span>
+</a>
+<a href="{% url 'post_remove' pk=post.pk %}" class="btn btn-primary">
+    <span class="glyphicon glyphicon-remove"
+        ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+        >
+            <path
+                d="M23.954 21.03l-9.184-9.095 9.092-9.174-2.832-2.807-9.09 9.179-9.176-9.088-2.81 2.81 9.186 9.105-9.095 9.184 2.81 2.81 9.112-9.192 9.18 9.1z"
+            /></svg
+    ></span>
+</a>
+{% endif %}
+
+<hr />
+<a
+    href="{% url 'add_comment_to_post' pk=post.pk %}"
+    class="btn btn-primary btn-comment"
+>
+    Add Comment
+</a>
+
+<div class="container">
+    {% for comment in post.comments.all %}
+    <br />
+    {% if user.is_authenticated or comment.approved_comment %}
+    {{comment.created_date}} {% if not comment.approved_comment %}
+    <a href="{% url 'comment_remove' pk=comment.pk %}" class="btn btn-default">
+        <span class="glyphicon glyphicon-remove"
+            ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    d="M23.954 21.03l-9.184-9.095 9.092-9.174-2.832-2.807-9.09 9.179-9.176-9.088-2.81 2.81 9.186 9.105-9.095 9.184 2.81 2.81 9.112-9.192 9.18 9.1z"
+                /></svg
+        ></span>
+    </a>
+    <a href="{% url 'comment_approve' pk=comment.pk %}" class="btn btn-primary">
+        <span class="glyphicon glyphicon-ok"
+            ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    d="M9 21.035l-9-8.638 2.791-2.87 6.156 5.874 12.21-12.436 2.843 2.817z"
+                /></svg
+        ></span>
+    </a>
+    {% endif %}
+    <p>{{comment.text|safe|linebreaks}}</p>
+    <p>Posted By: {{comment.author}}</p>
+    {% endif %} {% empty %}
+    <p>No Comments!</p>
+    {% endfor %}
+</div>
+
+{% endblock content %}
